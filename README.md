@@ -48,11 +48,36 @@ riding on cungus's uptime. This is that backend. It does exactly one thing.
    that change to the `mambru-inc` GitHub repo the same way every other site
    fix reaches `mambru.online` (this is a GitHub Pages site, no CI).
 
+## Seeing and emailing the waitlist (added 2026-09-05)
+
+Nothing read `drop_signups` back until now — signups just piled up in
+Postgres with no way to see them or tell anyone about anything. Fixed with
+the same script-based approach `mambru-backend` already uses for the cungus
+drop-notify system:
+
+```bash
+node scripts/notify-waitlist.js --list
+# or: npm run waitlist:list
+
+node scripts/notify-waitlist.js --tag=launch-day --subject="It's live" --message="mambru.online/index.html"
+# or, to see who'd get it without sending: add --dry-run
+```
+
+Sending needs `EMAIL_USER`/`EMAIL_PASS` set (see `.env.example`) — a Gmail
+address and an App Password, same two vars `mambru-backend` already uses, so
+if that's already set up there, it's already set up here too. `--list`
+alone needs nothing but `DATABASE_URL`, which is already required for
+everything else in this backend.
+
+`--tag` is required on every send so re-running after a partial failure
+never double-emails anyone — already-tagged addresses for that exact tag are
+skipped automatically.
+
 ## If you want the old signups moved over
 
-The table shape matches `mambru-backend`'s `drop_signups` (minus two
-drop-notify columns that don't apply here — see the comment in
-`db/schema.sql`). A plain
+The table shape now matches `mambru-backend`'s `drop_signups` exactly
+(`notified_at`/`notified_tag` were added here 2026-09-05 for the script
+above — see the comment in `db/schema.sql`). A plain
 `INSERT INTO drop_signups (email, created_at) SELECT email, created_at FROM <old>.drop_signups`
 against this database, run once, carries the existing list over. Not done
 automatically — moving real user data between databases is a real action,
