@@ -1,7 +1,7 @@
 {
   "name": "veynor-backend",
-  "version": "1.0.0",
-  "description": "Standalone backend for Veynor Solis (Mambru Inc) — currently just the waitlist. Split out from mambru-backend on 2026-08-29 so Mambru Inc's only live conversion path doesn't go down when cungus's shared backend does.",
+  "version": "1.0.1",
+  "description": "Standalone backend for Veynor Solis (Mambru Inc) \u2014 currently just the waitlist. Split out from mambru-backend on 2026-08-29 so Mambru Inc's only live conversion path doesn't go down when cungus's shared backend does.",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
