@@ -129,7 +129,11 @@ test('the challenge route refuses unknown scopes, answers with no-store, reports
     assert.equal((await fetch(`${base}/api/captcha/challenge`)).status, 400);
     const res = await fetch(`${base}/api/captcha/challenge?scope=contact`);
     assert.equal(res.headers.get('cache-control'), 'no-store');
-    assert.deepEqual(await (await fetch(`${base}/api/captcha/status`)).json(), { mode: 'enforce', scopes: ['signup', 'contact', 'login'] });
+    const status = await (await fetch(`${base}/api/captcha/status`)).json();
+    assert.equal(status.mode, 'enforce');
+    assert.deepEqual(status.scopes, ['signup', 'contact', 'login']);
+    assert.equal(typeof status.since, 'string');
+    assert.deepEqual(Object.keys(status).sort(), ['failed', 'honeypot', 'issued', 'mode', 'passed', 'scopes', 'since'], 'nothing personal is reported');
   });
   await withServer(createCaptcha({ secret: '', log: quiet }), async (base) => {
     assert.equal((await fetch(`${base}/api/captcha/challenge?scope=signup`)).status, 503);
