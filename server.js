@@ -50,6 +50,8 @@ app.use(express.json({ limit: '1mb' })); // a signup body is one email address â
 
 app.get('/', (_, res) => res.json({ status: 'ok', service: 'veynor-backend', version: '1.0.0' }));
 
+// Invisible bot check for the public waitlist form: GET /api/captcha/challenge, GET /api/captcha/status.
+require('./lib/captchaInstance').mount(app);
 app.use('/', require('./routes/waitlist'));
 
 app.use((err, req, res, next) => {
