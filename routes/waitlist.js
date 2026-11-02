@@ -2,6 +2,7 @@ const express = require('express');
 const pool = require('../db');
 const { waitlistLimiter } = require('../middleware');
 const captcha = require('../lib/captchaInstance');
+const { isAcceptableEmail } = require('../lib/email');
 
 const router = express.Router();
 
@@ -23,7 +24,7 @@ const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 // had none, unlike every other public route in mambru-backend.
 router.post('/api/drop-signup', waitlistLimiter, captcha.guard('signup'), async (req, res) => {
   const { email } = req.body || {};
-  if (!email || typeof email !== 'string' || !EMAIL_RE.test(email)) {
+  if (!isAcceptableEmail(email)) {
     return res.status(400).json({ error: 'Invalid email' });
   }
   const normalized = email.trim().toLowerCase();
